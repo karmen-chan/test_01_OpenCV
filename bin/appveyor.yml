@@ -1,0 +1,28 @@
+version: '{build}'
+os: Windows Server 2012
+
+branches:
+  only:
+    - master
+skip_tags: true
+
+environment:
+  JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+  MAVEN_OPTS: -Xmx4g
+  JAVA_OPTS: -Xmx4g
+
+build_script:
+  - ./mvnw --version
+  - ./mvnw clean package -DskipTests
+
+test_script:
+  - ./mvnw clean install -P!generate-frontend
+  
+cache:
+  - C:\Users\appveyor\.m2
+  # node modules cache
+  - node_modules -> package.json
+  # cache node binary, clear when we update pom.xml, could indicate a new version of node
+  - node -> pom.xml
+  # Bower assets cache
+  - src/main/webapp/lib/  -> bower.json # preserve "bower assets" directory reset it if bower.json is modified
